@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTheme } from './ThemeProvider'
+import { contact, projects as siteProjects, experience as siteExperience, education as siteEducation, allSkillsFromProjects, findProjects } from '@/data/portfolio'
 
 type Message = {
   id: string
@@ -9,7 +10,7 @@ type Message = {
   content: string
 }
 
-const CV_PATH = process.env.NEXT_PUBLIC_CV_URL || '/cv/aziz-mensi-cv.pdf'
+const CV_PATH = contact.cvPath
 
 const Chatbot = () => {
   const { theme, toggleTheme } = useTheme()
@@ -23,79 +24,25 @@ const Chatbot = () => {
   const endRef = useRef<HTMLDivElement | null>(null)
 
   const kb = useMemo(() => ({
-    owner: 'Mohamed Aziz MENSI',
-    email: 'mohamedaziz.mensi@ensi-uma.tn',
-    phone: '+216 90 06 61 82',
-    location: 'Tunis, Tunisia',
-    linkedin: 'https://www.linkedin.com/in/aziz-mensi-44945727a/',
-    github: 'https://github.com/azme10',
+    owner: contact.owner,
+    email: contact.email,
+    phone: contact.phone,
+    location: contact.location,
+    linkedin: contact.linkedin,
+    github: contact.github,
     cv: CV_PATH,
-    projects: [
-      {
-        name: 'BrandOrbAI — AI Branding Platform',
-        year: '2025',
-        category: 'AI Platform',
-        summary: 'End-to-end AI platform with modular agents for branding, market analysis, finance, and social media.',
-        tags: ['FastAPI','LangGraph','OpenAI','Groq','Next.js','Tailwind','Framer Motion']
-      },
-      {
-        name: 'Menfolio - Personal Portfolio',
-        year: '2025',
-        category: 'Web Development',
-        summary: 'Next.js 15 + React 19 portfolio with dark/light themes and animations.',
-        tags: ['Next.js','React','TypeScript','Tailwind','GSAP','Three.js']
-      },
-      {
-        name: 'R2C-SLAM',
-        year: '2025',
-        category: 'Robotics',
-        summary: 'Real-time collaborative SLAM on ROS 2 with multi-robot sensor fusion.',
-        tags: ['ROS 2','SLAM','C++','Python']
-      },
-      {
-        name: 'Secure Entry',
-        year: '2024',
-        category: 'Embedded Systems',
-        summary: 'ESP32 facial recognition access control with real-time sync.',
-        tags: ['C/C++','Python','ESP32','Computer Vision']
-      },
-      {
-        name: 'AUTOFY',
-        year: '2024',
-        category: 'Web Development',
-        summary: 'Car sales and rental platform (HTML/CSS/JS/PHP).',
-        tags: ['PHP','MySQL','JavaScript']
-      },
-      {
-        name: 'Bank Simulation',
-        year: '2023',
-        category: 'Software Development',
-        summary: 'C++ simulation of banking operations and algorithms.',
-        tags: ['C++','OOP','Data Structures']
-      },
-      {
-        name: 'Line Follower Robot',
-        year: '2024',
-        category: 'Robotics',
-        summary: 'PID-controlled competitive line follower with encoders.',
-        tags: ['Arduino','C/C++','PID','Robotics']
-      }
-    ],
-    experience: [
-      {
-        role: 'AI Intern', company: 'Talan', period: 'Jul 2025 – Aug 30, 2025',
-        details: 'Worked on BrandOrbAI platform: agent architecture, analysis pipelines, and UI.'
-      },
-      {
-        role: 'Research Intern', company: 'LARODEC-ISG', period: 'Past role',
-        details: 'Academic/engineering contributions.'
-      }
-    ],
-    skills: [
-      'React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'GSAP', 'Framer Motion', 'Three.js',
-      'C/C++', 'Python', 'ROS 2', 'SLAM', 'OpenCV', 'ONNX Runtime',
-      'FastAPI', 'LangChain/LangGraph', 'Firebase', 'Zod'
-    ]
+    projects: siteProjects.map(p => ({
+      name: p.title,
+      year: p.period,
+      category: p.category,
+      summary: p.description,
+      tags: p.technologies,
+      github: p.github,
+      live: p.live,
+    })),
+    experience: siteExperience,
+    skills: allSkillsFromProjects(),
+    education: siteEducation,
   }), [])
 
   const suggest = useMemo(() => [
@@ -111,6 +58,7 @@ const Chatbot = () => {
     'Go to Projects',
     'Go to Contact',
     'Toggle theme',
+  "What's your name?",
   ], [])
 
   useEffect(() => {
@@ -125,10 +73,13 @@ const Chatbot = () => {
     if (/contact|email|phone|linkedin|github/.test(s)) {
       return `Contact info:\n• Email: ${kb.email}\n• Phone: ${kb.phone}\n• LinkedIn: ${kb.linkedin}\n• GitHub: ${kb.github}`
     }
+    if (/what['’`]?s your name|whats your name|your name|who are you/.test(s)) {
+      return `I'm the Menfolio Assistant for ${kb.owner}. I can help you explore the portfolio and find the CV.`
+    }
     if (/project|brandorb|menfolio|slam|secure|autofy|bank|line follower/.test(s)) {
-      const found = kb.projects.filter(p => s.includes(p.name.toLowerCase().split(' ')[0]) || s.includes(p.category.toLowerCase()))
-      const list = (found.length ? found : kb.projects).slice(0, 5)
-      return list.map(p => `• ${p.name} (${p.category}, ${p.year}) – ${p.summary}`).join('\n')
+      const foundList = findProjects(s)
+      const mapIt = (arr: typeof siteProjects) => arr.slice(0, 5).map(p => `• ${p.title} (${p.category}, ${p.period}) – ${p.description}`).join('\n')
+      return foundList.length ? mapIt(foundList) : mapIt(siteProjects)
     }
     if (/skill|stack|tech/.test(s)) {
       return `Core skills: ${kb.skills.join(', ')}`
@@ -137,7 +88,7 @@ const Chatbot = () => {
       return kb.experience.map(e => `• ${e.role} at ${e.company} – ${e.period}. ${e.details}`).join('\n')
     }
     if (/education|school|ensi/.test(s)) {
-      return 'Education: ENSI – National School of Computer Science (Computer Science Engineering, 2023–present). Prior: IPEIT (Math/Physics), Math Baccalaureate.'
+      return kb.education.map((e: any) => `• ${e.degree} — ${e.institution} (${e.period})`).join('\n')
     }
     if (/where|location|based/.test(s)) {
       return `I'm based in ${kb.location}.`
