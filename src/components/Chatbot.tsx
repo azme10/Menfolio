@@ -12,7 +12,7 @@ type Message = {
 const CV_PATH = process.env.NEXT_PUBLIC_CV_URL || '/cv/aziz-mensi-cv.pdf'
 
 const Chatbot = () => {
-  const { theme } = useTheme()
+  const { theme, toggleTheme } = useTheme()
   const [open, setOpen] = useState(false)
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState<Message[]>([{
@@ -104,6 +104,13 @@ const Chatbot = () => {
     'Tell me about BrandOrbAI',
     'List your projects',
     'What are your skills?',
+    'Show your experience',
+    'Show education',
+    'Open LinkedIn',
+    'Open GitHub',
+    'Go to Projects',
+    'Go to Contact',
+    'Toggle theme',
   ], [])
 
   useEffect(() => {
@@ -132,6 +139,12 @@ const Chatbot = () => {
     if (/education|school|ensi/.test(s)) {
       return 'Education: ENSI – National School of Computer Science (Computer Science Engineering, 2023–present). Prior: IPEIT (Math/Physics), Math Baccalaureate.'
     }
+    if (/where|location|based/.test(s)) {
+      return `I'm based in ${kb.location}.`
+    }
+    if (/available|availability|hire|hiring/.test(s)) {
+      return 'Open to discussing internships and collaborations. Feel free to reach out via email or LinkedIn.'
+    }
     return "I can help with projects, experience, skills, and how to contact or download the CV. Try: 'Download CV' or 'List your projects'."
   }
 
@@ -142,6 +155,43 @@ const Chatbot = () => {
     const reply: Message = { id: crypto.randomUUID(), role: 'assistant', content: answer(content) }
     setMessages(m => [...m, userMsg, reply])
     setInput('')
+  }
+
+  const goToSection = (id: string) => {
+    const el = document.getElementById(id)
+    if (el) el.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const handleQuick = (label: string) => {
+    switch (label) {
+      case 'Download CV':
+        window.open(kb.cv, '_blank')
+        setMessages(m => [...m, { id: crypto.randomUUID(), role: 'user', content: label }, { id: crypto.randomUUID(), role: 'assistant', content: `Opening CV… If it doesn’t open, use this link: ${kb.cv}` }])
+        return
+      case 'Open LinkedIn':
+        window.open(kb.linkedin, '_blank')
+        setMessages(m => [...m, { id: crypto.randomUUID(), role: 'user', content: label }, { id: crypto.randomUUID(), role: 'assistant', content: `Opening LinkedIn: ${kb.linkedin}` }])
+        return
+      case 'Open GitHub':
+        window.open(kb.github, '_blank')
+        setMessages(m => [...m, { id: crypto.randomUUID(), role: 'user', content: label }, { id: crypto.randomUUID(), role: 'assistant', content: `Opening GitHub: ${kb.github}` }])
+        return
+      case 'Go to Projects':
+        goToSection('projects')
+        setMessages(m => [...m, { id: crypto.randomUUID(), role: 'user', content: label }, { id: crypto.randomUUID(), role: 'assistant', content: 'Navigating to Projects…' }])
+        return
+      case 'Go to Contact':
+        goToSection('contact')
+        setMessages(m => [...m, { id: crypto.randomUUID(), role: 'user', content: label }, { id: crypto.randomUUID(), role: 'assistant', content: 'Navigating to Contact…' }])
+        return
+      case 'Toggle theme':
+        toggleTheme()
+        setMessages(m => [...m, { id: crypto.randomUUID(), role: 'user', content: label }, { id: crypto.randomUUID(), role: 'assistant', content: 'Toggled theme.' }])
+        return
+      default:
+        send(label)
+        return
+    }
   }
 
   return (
@@ -181,7 +231,7 @@ const Chatbot = () => {
           </div>
           <div className="px-3 pb-2 flex flex-wrap gap-2">
             {suggest.map((s, i) => (
-              <button key={i} onClick={() => send(s)} className={`text-xs px-2 py-1 rounded-full border ${ theme === 'dark' ? 'border-gray-700 hover:bg-gray-800' : 'border-gray-300 hover:bg-gray-100' }`}>{s}</button>
+              <button key={i} onClick={() => handleQuick(s)} className={`text-xs px-2 py-1 rounded-full border ${ theme === 'dark' ? 'border-gray-700 hover:bg-gray-800' : 'border-gray-300 hover:bg-gray-100' }`}>{s}</button>
             ))}
           </div>
           <form
