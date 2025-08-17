@@ -43,7 +43,6 @@ const About = () => {
               handle="azizmensi"
               status="Available for Internships"
               contactText="Contact Me"
-              avatarUrl="/images/MEE.jpg"
               showUserInfo={true}
               enableTilt={true}
               enableMobileTilt={false}

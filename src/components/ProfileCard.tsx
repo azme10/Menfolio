@@ -57,7 +57,7 @@ interface ProfileCardProps {
 }
 
 const ProfileCardComponent = ({
-  avatarUrl = "/images/MEE.jpg",
+  avatarUrl = process.env.NEXT_PUBLIC_PROFILE_IMAGE || "/images/MEE.jpg",
   iconUrl = "",
   grainUrl = "",
   behindGradient,

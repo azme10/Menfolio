@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/ThemeProvider'
@@ -10,7 +10,16 @@ export const metadata: Metadata = {
   description: 'Software Engineering Student Portfolio - Embedded Systems & Web Development',
   keywords: 'Mohamed Aziz MENSI, Software Engineering, Computer Science, Portfolio, ENSI',
   authors: [{ name: 'Mohamed Aziz MENSI' }],
-  viewport: 'width=device-width, initial-scale=1',
+  icons: {
+  icon: process.env.NEXT_PUBLIC_SITE_ICON || '/images/MEE.jpg',
+  apple: process.env.NEXT_PUBLIC_SITE_ICON || '/images/MEE.jpg',
+  shortcut: process.env.NEXT_PUBLIC_SITE_ICON || '/images/MEE.jpg',
+  },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({
