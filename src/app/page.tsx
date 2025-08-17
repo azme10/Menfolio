@@ -10,6 +10,7 @@ import Skills from '@/components/Skills'
 import Contact from '@/components/Contact'
 import PillNav from '@/components/PillNav'
 import ThemeToggle from '@/components/ThemeToggle'
+import Chatbot from '@/components/Chatbot'
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState('home')
@@ -63,6 +64,9 @@ export default function Home() {
       <div className="fixed bottom-6 right-6 z-50">
         <ThemeToggle />
       </div>
+
+  {/* Floating Chatbot */}
+  <Chatbot />
       
       <section id="home">
         <Hero />

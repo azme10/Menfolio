@@ -136,6 +136,25 @@ const Contact = () => {
                   </div>
                 </motion.a>
               ))}
+
+              {/* Download CV */}
+              <motion.a
+                href={process.env.NEXT_PUBLIC_CV_URL || '/cv/aziz-mensi-cv.pdf'}
+                download
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: contactInfo.length * 0.1 }}
+                viewport={{ once: true }}
+                className="flex items-center p-4 bg-green-50 dark:bg-green-900/30 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors duration-300 group border border-green-200 dark:border-green-800"
+              >
+                <div className="flex items-center justify-center w-12 h-12 bg-green-500 text-white rounded-lg mr-4 group-hover:bg-green-600 transition-colors duration-300">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"/></svg>
+                </div>
+                <div>
+                  <p className="text-sm text-green-700 dark:text-green-300">Resume</p>
+                  <p className="text-green-900 dark:text-green-100 font-medium">Download CV (PDF)</p>
+                </div>
+              </motion.a>
             </div>
 
             {/* Social Links */}

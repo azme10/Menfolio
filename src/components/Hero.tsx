@@ -88,6 +88,17 @@ const Hero = () => {
               View My Work
             </a>
             <a
+              href={process.env.NEXT_PUBLIC_CV_URL || '/cv/aziz-mensi-cv.pdf'}
+              download
+              className={`px-8 py-3 font-medium rounded-lg transition-colors duration-200 z-20 relative border ${
+                theme === 'dark'
+                  ? 'border-green-400 text-green-200 hover:text-white hover:bg-green-600/20'
+                  : 'border-green-600 text-green-700 hover:text-green-900 hover:bg-green-50'
+              }`}
+            >
+              Download CV
+            </a>
+            <a
               href="#about"
               className={`px-8 py-3 border font-medium rounded-lg transition-colors duration-200 z-20 relative ${
                 theme === 'dark'
